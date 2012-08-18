@@ -1,0 +1,9 @@
+- Implement generic suspensions
+- Refactor Recurrences out of RecurrenceApplications (using generic suspensions if possible). (It might not be possible.)
+- Implement a way to evaluate a suspension, one step at a time, or entirely (Also, I think I can use suspensions to implement an expression stepper, since the type is general enough) 
+-- Think about how this is different from continuations, if in fact they are.
+- Consider switching Monomial and Term, and how to make that compatible with functions I have defined
+- Add documentation where missing, and improve existing documentation
+- Figure out some way to express generic recurrence relations so that you can display f(n) = f(n - 1) + f(n - 2)
+- Refactor printing recurrences from the recurrences themself, with some sort of presentation data type that has formatting info, and can be displayed. 
+- Modularize further, where possible
