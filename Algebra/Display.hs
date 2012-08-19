@@ -1,9 +1,11 @@
 module Algebra.Display where
 
 import Algebra.Base
+import Algebra.Suspension
 import Algebra.Symbol
 
 import Data.List ( intersperse )
+import Data.Map ( Map )
 import qualified Data.Map as Map
 
 import Util.Display
@@ -20,9 +22,9 @@ instance Symbolic Latin.Letter where
   symbol = U.c2s . Latin.lowercaseLetter
 
 instance Display Polynomial where 
-  display (P m) = concat $ intersperse " + " $ map display $ toTerms m
+  display p = concat $ intersperse " + " $ map display $ splitPolynomial p
   
-instance Display Term where  
+instance Display Monomial where  
   display (v :* c) = coefficientString c ++ display v 
 
 showPowerRemainder :: Integer -> Integer -> String
@@ -36,8 +38,8 @@ coefficientString :: Integer -> String
 coefficientString 1 = ""
 coefficientString c = display $ c -- `inBase` 4
 
-instance Display Monomial where 
-  display (M m) = concat $ map (\(l, p) -> display l ++ (superscriptDigit p)) (Map.assocs m)
+instance Display Term where 
+  display (T m) = concat $ map (\(l, p) -> display l ++ (superscriptDigit p)) (Map.assocs m)
 
 instance Display SymbolicConstant where
   display (l :. Nothing) = display l
@@ -48,5 +50,4 @@ instance Display Variable where
   display (R r) = display r
 
 instance Display Recurrence where
-  display (Recurrence f _ n) = (U.c2s $ Latin.lowercaseLetter f) ++ (parentheses $ display n)
-
+  display (Recurrence f (Suspension _ n)) = (U.c2s $ Latin.lowercaseLetter f) ++ (parentheses $ display n)
