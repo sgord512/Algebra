@@ -1,5 +1,5 @@
-- Implement generic suspensions
-- Refactor Recurrences out of RecurrenceApplications (using generic suspensions if possible). (It might not be possible.)
+- Implement generic suspensions DONE
+- Refactor Recurrences out of RecurrenceApplications (using generic suspensions if possible). (It might not be possible.) SORT OF DONE, MORE WORK IS NEEDED
 - Implement a way to evaluate a suspension, one step at a time, or entirely (Also, I think I can use suspensions to implement an expression stepper, since the type is general enough) 
 -- Think about how this is different from continuations, if in fact they are.
 - Consider switching Monomial and Term, and how to make that compatible with functions I have defined

@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 module Algebra.Display where
 
 import Algebra.Base
@@ -25,21 +26,25 @@ instance Display Polynomial where
   display p = concat $ intersperse " + " $ map display $ splitPolynomial p
   
 instance Display Monomial where  
-  display (v :* c) = coefficientString c ++ display v 
+  display (v :* c) = display c ++ display v 
+
+displayMonomial :: Bool -> Bool -> Monomial -> String
+displayMonomial showC showE (v :* c) = displayCoefficient c ++ (displayTerm showE v)
+  where displayCoefficient = (if showC then hideOnes else id) display
+
+hideOnes :: (Integer -> String) -> Integer -> String
+hideOnes f 1 = ""
+hideOnes f n = f n 
 
 showPowerRemainder :: Integer -> Integer -> String
 x `showPowerRemainder` b = let (m, r) = x `powerRemainder` b in show b ++ superscriptNumber m ++ " + " ++ show r 
 
-superscriptDigit :: Integer -> String
-superscriptDigit 1 = ""
-superscriptDigit d = U.c2s $ U.superscriptDigit d
-
-coefficientString :: Integer -> String
-coefficientString 1 = ""
-coefficientString c = display $ c -- `inBase` 4
-
 instance Display Term where 
-  display (T m) = concat $ map (\(l, p) -> display l ++ (superscriptDigit p)) (Map.assocs m)
+  display (T m) = concat $ map (\(l, p) -> display l ++ (superscriptNumber p)) (Map.assocs m)
+
+displayTerm :: Bool -> Term -> String
+displayTerm showE (T m) = concat $ map (\(l, p) -> display l ++ (displayExponent p)) (Map.assocs m)
+  where displayExponent = (if showE then hideOnes else id) superscriptNumber
 
 instance Display SymbolicConstant where
   display (l :. Nothing) = display l
@@ -51,3 +56,9 @@ instance Display Variable where
 
 instance Display Recurrence where
   display (Recurrence f (Suspension _ n)) = (U.c2s $ Latin.lowercaseLetter f) ++ (parentheses $ display n)
+
+instance Display RecurrencePerspective where
+  display RecurrencePerspective{..} = display recurrence ++ " = " ++ displayedPolynomial
+    where displayedPolynomial = concat $ intersperse " + " $ map (displayMonomial printCoefficientWhen1 printExponentWhen1) $ splitPolynomial polynomial
+          polynomial = expandRecurrence recurrence .+. emptyPolynomial
+          emptyPolynomial = mergeMonomials $ emptyConstantTerms printedConstants
